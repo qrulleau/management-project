@@ -3,8 +3,11 @@
 namespace App\Entity;
 
 use App\Repository\ProjectRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\File;
 
 #[ORM\Entity(repositoryClass: ProjectRepository::class)]
 class Project
@@ -12,38 +15,66 @@ class Project
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = null;
+    private int $id;
 
     #[ORM\Column(length: 255)]
-    private ?string $name = null;
-
-    #[ORM\Column(length: 255)]
-    private ?string $thumbnail = null;
+    private string $name;
 
     #[ORM\Column(type: Types::TEXT)]
-    private ?string $description = null;
+    private string $description;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $link = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $date_started = null;
+    private File $thumbnail;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $date_ended = null;
+    #[ORM\Column]
+    private string $imagePath;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $date_created = null;
+    #[ORM\Column]
+    private ?\DateTime $startedAt;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $date_updated = null;
+    #[ORM\Column(nullable: true)]
+    private ?\DateTime $finishedAt = null;
+
+    #[ORM\Column]
+    private ?\DateTime $createdAt;
+
+    #[ORM\Column]
+    private ?\DateTime $updatedAt;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Category $category = null;
+
+    #[ORM\ManyToMany(targetEntity: Language::class)]
+    private Collection $languages;
+
+    public function __construct(
+        string $name,
+        string $description,
+        \DateTime $startedAt,
+        Category $category,
+        ?string $link = null,
+        array $languages = [],
+    ) {
+        $this->name = $name;
+        $this->description = $description;
+        $this->startedAt = $startedAt;
+        $this->link ??= $link;
+        $this->category = $category;
+
+        $this->createdAt = new \DateTime();
+        $this->updatedAt = new \DateTime();
+        $this->languages = new ArrayCollection($languages);
+    }
 
     public function getId(): ?int
     {
-        return $this->id;
+        return $this->id ?? null;
     }
 
-    public function getName(): ?string
+    public function getName(): string
     {
         return $this->name;
     }
@@ -51,23 +82,12 @@ class Project
     public function setName(string $name): static
     {
         $this->name = $name;
+        $this->update();
 
         return $this;
     }
 
-    public function getThumbnail(): ?string
-    {
-        return $this->thumbnail;
-    }
-
-    public function setThumbnail(string $thumbnail): static
-    {
-        $this->thumbnail = $thumbnail;
-
-        return $this;
-    }
-
-    public function getDescription(): ?string
+    public function getDescription(): string
     {
         return $this->description;
     }
@@ -75,6 +95,7 @@ class Project
     public function setDescription(string $description): static
     {
         $this->description = $description;
+        $this->update();
 
         return $this;
     }
@@ -84,58 +105,115 @@ class Project
         return $this->link;
     }
 
-    public function setLink(string $link): static
+    public function setLink(?string $link): static
     {
         $this->link = $link;
+        $this->update();
 
         return $this;
     }
 
-    public function getDateStarted(): ?\DateTimeInterface
+    public function getThumbnail(): File
     {
-        return $this->date_started;
+        return $this->thumbnail;
     }
 
-    public function setDateStarted(\DateTimeInterface $date_started): static
+    public function setThumbnail(File $thumbnail): static
     {
-        $this->date_started = $date_started;
+        $this->thumbnail = $thumbnail;
 
         return $this;
     }
 
-    public function getDateEnded(): ?\DateTimeInterface
+    public function getImagePath(): string
     {
-        return $this->date_ended;
+        return $this->imagePath;
     }
 
-    public function setDateEnded(?\DateTimeInterface $date_ended): static
+    public function setImagePath(string $imagePath): static
     {
-        $this->date_ended = $date_ended;
+        $this->imagePath = $imagePath;
 
         return $this;
     }
 
-    public function getDateCreated(): ?\DateTimeInterface
+    public function getStartedAt(): \DateTime
     {
-        return $this->date_created;
+        return $this->startedAt;
     }
 
-    public function setDateCreated(\DateTimeInterface $date_created): static
+    public function getFinishedAt(): ?\DateTime
     {
-        $this->date_created = $date_created;
+        return $this->finishedAt;
+    }
+
+    public function setFinishedAt(\DateTime $finishedAt): static
+    {
+        $this->finishedAt = $finishedAt;
+        $this->update();
 
         return $this;
     }
 
-    public function getDateUpdated(): ?\DateTimeInterface
+    public function getCreatedAt(): \DateTime
     {
-        return $this->date_updated;
+        return $this->createdAt;
     }
 
-    public function setDateUpdated(\DateTimeInterface $date_updated): static
+    public function getUpdatedAt(): \DateTime
     {
-        $this->date_updated = $date_updated;
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(\DateTime $updatedAt): static
+    {
+        $this->updatedAt = $updatedAt;
+        $this->update();
 
         return $this;
+    }
+
+    public function getCategory(): ?Category
+    {
+        return $this->category;
+    }
+
+    public function setCategory(Category $category): static
+    {
+        $this->category = $category;
+        $this->update();
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Language>
+     */
+    public function getLanguages(): Collection
+    {
+        return $this->languages;
+    }
+
+    public function addLanguage(Language $language): static
+    {
+        if (!$this->languages->contains($language)) {
+            $this->languages->add($language);
+            $this->update();
+        }
+
+        return $this;
+    }
+
+    public function removeLanguage(Language $language): static
+    {
+        $this->languages->removeElement($language);
+        $this->update();
+
+        return $this;
+    }
+
+    private function update(): void
+    {
+        $this->updatedAt = new \DateTime();
     }
 }
