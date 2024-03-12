@@ -3,14 +3,14 @@
 namespace App\DataFixtures;
 
 use App\Entity\User;
-use Doctrine\Common\DataFixtures\AbstractFixture;
+use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
-use Symfony\Component\PasswordHasher\PasswordHasherInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
-class UserFixtures extends AbstractFixture
+class UserFixtures extends Fixture
 {
     public function __construct(
-        private PasswordHasherInterface $passwordHasher,
+        private UserPasswordHasherInterface $passwordEncoder,
     ) {
     }
 
@@ -19,16 +19,24 @@ class UserFixtures extends AbstractFixture
         return User::class;
     }
 
-    public function loadData(): iterable
+    public function loadData(ObjectManager $manager): iterable
     {
         yield [
-            'email'    => 'test@test',
-            'password' => $this->passwordHasher->hash('test')
+            'name'    => 'test',
+            'password' => $this->passwordEncoder->hashPassword(new User(), 'test')
         ];
     }
 
     public function load(ObjectManager $manager)
     {
-        // TODO: Implement load() method.
+        foreach ($this->loadData($manager) as $data) {
+            $user = new User();
+            $user->setName($data['name']);
+            $user->setRoles(['ROLE_ADMIN']);
+            $user->setPassword($data['password']);
+            $manager->persist($user);
+        }
+
+        $manager->flush();
     }
 }
