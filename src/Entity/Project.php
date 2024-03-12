@@ -43,7 +43,7 @@ class Project
     #[ORM\Column]
     private ?\DateTime $updatedAt;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(targetEntity: Category::class, inversedBy: 'projects')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Category $category = null;
 
