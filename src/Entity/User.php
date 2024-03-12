@@ -66,7 +66,7 @@ class User implements PasswordAuthenticatedUserInterface, UserInterface
 
     public function getUserIdentifier(): string
     {
-        return (string) $this->email;
+        return (string) $this->name;
     }
 
     public function setRoles(array $roles): static
