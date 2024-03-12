@@ -27,12 +27,6 @@ class User implements PasswordAuthenticatedUserInterface, UserInterface
     #[ORM\Column]
     private array $roles = [];
 
-    #[ORM\Column]
-    private ?\DateTimeImmutable $created_at = null;
-
-    #[ORM\Column]
-    private ?\DateTimeImmutable $deleted_at = null;
-
     public function getId(): ?int
     {
         return $this->id;
@@ -82,32 +76,9 @@ class User implements PasswordAuthenticatedUserInterface, UserInterface
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
-    {
-        return $this->created_at;
-    }
-
-    public function setCreatedAt(\DateTimeImmutable $created_at): static
-    {
-        $this->created_at = $created_at;
-
-        return $this;
-    }
-
-    public function getDeletedAt(): ?\DateTimeImmutable
-    {
-        return $this->deleted_at;
-    }
-
-    public function setDeletedAt(\DateTimeImmutable $deleted_at): static
-    {
-        $this->deleted_at = $deleted_at;
-
-        return $this;
-    }
 
     public function eraseCredentials(): void
     {
-        
+
     }
 }
