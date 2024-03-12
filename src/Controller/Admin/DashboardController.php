@@ -25,14 +25,13 @@ class DashboardController extends AbstractDashboardController
     public function configureDashboard(): Dashboard
     {
         return Dashboard::new()
-            ->setTitle('Management Project');
+            ->setTitle('Management Project')
+            ->renderContentMaximized();
     }
 
     public function configureMenuItems(): iterable
     {
-        yield MenuItem::linkToDashboard('Dashboard', 'fa fa-home');
-        yield MenuItem::linkToCrud('User', 'fa-solid fa-user', User::class);
         yield MenuItem::linkToCrud('Project', 'fa-solid fa-sheet-plastic', Project::class);
-        yield MenuItem::linkToCrud('Category', 'fa-solid fa-layer-group', Category::class);
+        yield MenuItem::linkToCrud('Ajouter un projet', 'fas fa-plus', Project::class)->setAction(Crud::PAGE_NEW);
     }
 }
