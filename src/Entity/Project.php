@@ -8,6 +8,8 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\Validator\Constraints as Assert;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 #[ORM\Entity(repositoryClass: ProjectRepository::class)]
 class Project
@@ -26,6 +28,7 @@ class Project
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $link = null;
 
+    #[Vich\UploadableField(mapping: 'project_image', fileNameProperty: 'picture')]
     private File $thumbnail;
 
     #[ORM\Column]
@@ -40,33 +43,27 @@ class Project
     #[ORM\Column]
     private ?\DateTime $createdAt;
 
+    public function setCreatedAt(?\DateTime $createdAt): self
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
     #[ORM\Column]
     private ?\DateTime $updatedAt;
 
     #[ORM\ManyToOne(targetEntity: Category::class, inversedBy: 'projects')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull(message: 'Veuillez indiquer une catégorie')]
     private ?Category $category = null;
 
     #[ORM\ManyToMany(targetEntity: Language::class)]
+    #[Assert\NotNull(message: 'Veuillez indiquer au moins un language de programmation.')]
     private Collection $languages;
 
-    public function __construct(
-        string $name,
-        string $description,
-        \DateTime $startedAt,
-        Category $category,
-        ?string $link = null,
-        array $languages = [],
-    ) {
-        $this->name = $name;
-        $this->description = $description;
-        $this->startedAt = $startedAt;
-        $this->link ??= $link;
-        $this->category = $category;
-
-        $this->createdAt = new \DateTime();
-        $this->updatedAt = new \DateTime();
-        $this->languages = new ArrayCollection($languages);
+    public function __construct() {
+        $this->languages = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -118,11 +115,13 @@ class Project
         return $this->thumbnail;
     }
 
-    public function setThumbnail(File $thumbnail): static
+    public function setThumbnail(?File $thumbnail = null): void
     {
         $this->thumbnail = $thumbnail;
 
-        return $this;
+        if (null !== $thumbnail) {
+            $this->updatedAt = new \DateTime();
+        }
     }
 
     public function getImagePath(): string
@@ -140,6 +139,13 @@ class Project
     public function getStartedAt(): \DateTime
     {
         return $this->startedAt;
+    }
+
+    public function setStartedAt(?\DateTime $startedAt): self
+    {
+        $this->startedAt = $startedAt;
+
+        return $this;
     }
 
     public function getFinishedAt(): ?\DateTime
@@ -194,20 +200,22 @@ class Project
         return $this->languages;
     }
 
-    public function addLanguage(Language $language): static
+
+    public function addLanguage(Language $language): self
     {
         if (!$this->languages->contains($language)) {
-            $this->languages->add($language);
-            $this->update();
+            $this->languages[] = $language;
+            $language->addProject($this);
         }
 
         return $this;
     }
 
-    public function removeLanguage(Language $language): static
+    public function removeLanguage(Language $language): self
     {
-        $this->languages->removeElement($language);
-        $this->update();
+        if ($this->languages->removeElement($language)) {
+            $language->removeProject($this);
+        }
 
         return $this;
     }
