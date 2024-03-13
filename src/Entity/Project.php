@@ -9,6 +9,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Validator\Constraints as Assert;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 
 #[ORM\Entity(repositoryClass: ProjectRepository::class)]
 class Project
@@ -27,6 +28,7 @@ class Project
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $link = null;
 
+    #[Vich\UploadableField(mapping: 'project_image', fileNameProperty: 'picture')]
     private File $thumbnail;
 
     #[ORM\Column]
@@ -113,11 +115,13 @@ class Project
         return $this->thumbnail;
     }
 
-    public function setThumbnail(File $thumbnail): static
+    public function setThumbnail(?File $thumbnail = null): void
     {
         $this->thumbnail = $thumbnail;
 
-        return $this;
+        if (null !== $thumbnail) {
+            $this->updatedAt = new \DateTime();
+        }
     }
 
     public function getImagePath(): string
@@ -135,6 +139,13 @@ class Project
     public function getStartedAt(): \DateTime
     {
         return $this->startedAt;
+    }
+
+    public function setStartedAt(?\DateTime $startedAt): self
+    {
+        $this->startedAt = $startedAt;
+
+        return $this;
     }
 
     public function getFinishedAt(): ?\DateTime
@@ -192,7 +203,7 @@ class Project
 
     public function addLanguage(Language $language): self
     {
-        if (!$this->$language->contains($language)) {
+        if (!$this->languages->contains($language)) {
             $this->languages[] = $language;
             $language->addProject($this);
         }

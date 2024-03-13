@@ -9,14 +9,14 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ArrayField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 
 class ProjectCrudController extends AbstractCrudController
 {
@@ -28,36 +28,29 @@ class ProjectCrudController extends AbstractCrudController
 
     public function configureFields(string $pageName): iterable
     {
-        $LanguageField = AssociationField::new('languages', 'Languages')
-                                         ->onlyOnForms()
-                                         ->setFormTypeOptions([
-                                             'by_reference' => false,
-                                             'multiple' => true,
-                                             'class' => Language::class,
-                                             'choice_label' => 'name',
-                                             'required' => 'true',
-                                         ]);
+        $LanguageField = AssociationField::new('languages', 'languages')
+                                             ->onlyOnForms()
+                                             ->setFormTypeOptions([
+                                                 'by_reference' => false,
+                                                 'multiple' => true,
+                                                 'class' => Language::class,
+                                                 'choice_label' => 'name',
+                                                 'required' => 'true',
+                                             ]);
 
         if (Crud::PAGE_DETAIL === $pageName) {
             $LanguageField = ArrayField::new('languages', 'Languages')
-                                       ->onlyOnDetail();
+                                           ->onlyOnDetail();
         }
 
         if (Crud::PAGE_INDEX === $pageName) {
             $LanguageField = CollectionField::new('languages', 'Languages')
-                                            ->onlyOnIndex();
+                                                ->onlyOnIndex();
         }
-
-        $thumbnailField = ImageField::new('thumbnail', 'Image')
-                                    ->setBasePath("upload/thumbnail")
-                                    ->setUploadDir("public/upload/thumbnail")
-                                    ->setFormType(VichImageType::class, [
-                                        'download_uri' => false,
-                                    ]);
 
         $fields = [
             TextField::new('name', 'Nom'),
-            $thumbnailField,
+            ImageField::new('imagePath')->setUploadDir('public/upload/thumbnail')->setBasePath('upload'),
             AssociationField::new('category', 'Catégorie')
                             ->setRequired(true),
             $LanguageField,
