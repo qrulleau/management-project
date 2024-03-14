@@ -31,10 +31,15 @@
             Gaming
         </button>
     </div>
-    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+    <div id="projects" class="grid grid-cols-2 md:grid-cols-3 gap-4 gap-x-0">
         {% for project in projects %}
-            <div class="h-auto max-w-full rounded-lg">
-                <img src="{{ vich_uploader_asset(project, 'thumbnail') }}" alt="">
+            <div class="w-11/12 h-64 md:mx-4 rounded-md overflow-hidden bg-cover bg-center md:w-1/1" style="background-image: url('{{ vich_uploader_asset(project, 'thumbnail') }}')">
+                <div class="bg-gray-900 bg-opacity-50 flex items-center h-full">
+                    <div class="px-10 max-w-xl">
+                        <h2 class="text-2xl text-white font-semibold">{{  project.name }}</h2>
+                        <p class="mt-2 text-gray-400">{{ project.description| slice(0,100) }}</p>
+                    </div>
+                </div>
             </div>
         {% endfor %}
     </div>
