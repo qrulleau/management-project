@@ -10,8 +10,8 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\ArrayField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ImageField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\TextEditorField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
@@ -24,27 +24,26 @@ class ProjectCrudController extends AbstractCrudController
         return Project::class;
     }
 
-
     public function configureFields(string $pageName): iterable
     {
         $LanguageField = AssociationField::new('languages', 'languages')
-                                             ->onlyOnForms()
-                                             ->setFormTypeOptions([
-                                                 'by_reference' => false,
-                                                 'multiple' => true,
-                                                 'class' => Language::class,
-                                                 'choice_label' => 'name',
-                                                 'required' => 'true',
-                                             ]);
+                                         ->onlyOnForms()
+                                         ->setFormTypeOptions([
+                                             'by_reference' => false,
+                                             'multiple'     => true,
+                                             'class'        => Language::class,
+                                             'choice_label' => 'name',
+                                             'required'     => 'true',
+                                         ]);
 
         if (Crud::PAGE_DETAIL === $pageName) {
             $LanguageField = ArrayField::new('languages', 'Languages')
-                                           ->onlyOnDetail();
+                                       ->onlyOnDetail();
         }
 
         if (Crud::PAGE_INDEX === $pageName) {
             $LanguageField = CollectionField::new('languages', 'Languages')
-                                                ->onlyOnIndex();
+                                            ->onlyOnIndex();
         }
 
         $fields = [
@@ -60,7 +59,7 @@ class ProjectCrudController extends AbstractCrudController
             $fields[] = DateField::new('createdAt', 'Date de création')->onlyOnDetail();
             $fields[] = DateField::new('updatedAd', 'Date de modification')->onlyOnDetail();
             $fields[] = ImageField::new('imagePath', 'Image')->setUploadDir('public/upload/thumbnail')->setBasePath('upload/thumbnail');
-            $fields[] = TextEditorField::new('description');
+            $fields[] = TextareaField::new('description');
         }
 
         return $fields;
@@ -85,7 +84,6 @@ class ProjectCrudController extends AbstractCrudController
         $entityInstance->setUpdatedAt(new \DateTime());
         parent::updateEntity($entityManager, $entityInstance);
     }
-
 
     public function configureActions(Actions $actions): Actions
     {
