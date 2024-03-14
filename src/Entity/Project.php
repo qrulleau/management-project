@@ -23,14 +23,14 @@ class Project
     #[ORM\Column(length: 255)]
     private string $name;
 
-    #[ORM\Column(type: Types::TEXT)]
+    #[ORM\Column(type: 'text', length: 255)]
     private string $description;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $link = null;
 
     #[Vich\UploadableField(mapping: 'upload_images', fileNameProperty: 'imagePath')]
-    private File $thumbnail;
+    private ?File $thumbnail = null;
 
     #[ORM\Column]
     private string $imagePath;
@@ -63,7 +63,8 @@ class Project
     #[Assert\NotNull(message: 'Veuillez indiquer au moins un language de programmation.')]
     private Collection $languages;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->languages = new ArrayCollection();
     }
 
@@ -90,10 +91,9 @@ class Project
         return $this->description;
     }
 
-    public function setDescription(string $description): static
+    public function setDescription(string $description): self
     {
         $this->description = $description;
-        $this->update();
 
         return $this;
     }
@@ -111,7 +111,7 @@ class Project
         return $this;
     }
 
-    public function getThumbnail(): File
+    public function getThumbnail(): ?File
     {
         return $this->thumbnail;
     }
@@ -200,7 +200,6 @@ class Project
     {
         return $this->languages;
     }
-
 
     public function addLanguage(Language $language): self
     {
