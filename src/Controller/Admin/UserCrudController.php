@@ -25,7 +25,7 @@ class UserCrudController extends AbstractCrudController
             TextField::new('password'),
             ChoiceField::new('roles', 'Rôles')
                        ->setChoices([
-                           'ROLE_USER' => 'ROLE_USER',
+                           'ROLE_USER'  => 'ROLE_USER',
                            'ROLE_ADMIN' => 'ROLE_ADMIN',
                        ])
                        ->allowMultipleChoices(true)

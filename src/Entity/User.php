@@ -73,7 +73,7 @@ class User implements PasswordAuthenticatedUserInterface, UserInterface
 
     public function getUserIdentifier(): string
     {
-        return (string) $this->name;
+        return (string)$this->name;
     }
 
     public function setRoles(array $roles): static
@@ -82,7 +82,6 @@ class User implements PasswordAuthenticatedUserInterface, UserInterface
 
         return $this;
     }
-
 
     public function eraseCredentials(): void
     {
