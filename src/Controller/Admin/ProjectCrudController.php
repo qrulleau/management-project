@@ -16,7 +16,6 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
-use Symfony\Component\Form\Extension\Core\Type\FileType;
 
 class ProjectCrudController extends AbstractCrudController
 {
@@ -50,7 +49,6 @@ class ProjectCrudController extends AbstractCrudController
 
         $fields = [
             TextField::new('name', 'Nom'),
-            ImageField::new('imagePath')->setUploadDir('public/upload/thumbnail')->setBasePath('upload'),
             AssociationField::new('category', 'Catégorie')
                             ->setRequired(true),
             $LanguageField,
@@ -61,7 +59,7 @@ class ProjectCrudController extends AbstractCrudController
             $fields[] = DateField::new('finishedAt', 'Date de fin')->setFormTypeOption('input', 'datetime');
             $fields[] = DateField::new('createdAt', 'Date de création')->onlyOnDetail();
             $fields[] = DateField::new('updatedAd', 'Date de modification')->onlyOnDetail();
-            $fields[] = TextField::new('imagePath', 'Lien');
+            $fields[] = ImageField::new('imagePath', 'Image')->setUploadDir('public/upload/thumbnail')->setBasePath('upload/thumbnail');
             $fields[] = TextEditorField::new('description');
         }
 
