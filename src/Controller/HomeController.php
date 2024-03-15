@@ -26,6 +26,8 @@ class HomeController extends AbstractController
         $projects = $this->projectManager->getAllProjects();
         $categories = $this->categoryManager->getAllCategories();
 
+        dump($projects);
+
         return $this->render('home/index.html.twig', [
             'controller_name' => 'HomeController',
             'projects'        => $projects,

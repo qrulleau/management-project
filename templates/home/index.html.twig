@@ -10,12 +10,16 @@
     </div>
 
     <div class="flex items-center justify-center py-4 md:py-8 flex-wrap">
-        <button type="button"
+        <button
+                data-category="all"
+                type="button"
                 class="text-blue-700 hover:text-white border border-blue-600 bg-white hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-full text-base font-medium px-5 py-2.5 text-center me-3 mb-3 dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:bg-gray-900 dark:focus:ring-blue-800">
             All categories
         </button>
         {% for category in categories %}
-            <button type="button"
+            <button
+                    data-category="{{ category.name }}"
+                    type="button"
                     class="text-gray-900 border border-white hover:border-gray-200 dark:border-gray-900 dark:bg-gray-900 dark:hover:border-gray-700 bg-white focus:ring-4 focus:outline-none focus:ring-gray-300 rounded-full text-base font-medium px-5 py-2.5 text-center me-3 mb-3 dark:text-white dark:focus:ring-gray-800">
                 {{ category.name }}
             </button>
@@ -23,14 +27,23 @@
     </div>
     <div id="projects" class="grid grid-cols-2 md:grid-cols-3 gap-4 gap-x-0">
         {% for project in projects %}
-            <div class="w-11/12 h-64 md:mx-4 rounded-md overflow-hidden bg-cover bg-center md:w-1/1" style="background-image: url('{{ vich_uploader_asset(project, 'thumbnail') }}')">
+            <div
+                    id="{{ project.category.name }}"
+                    class="w-11/12 h-64 md:mx-4 rounded-md overflow-hidden bg-cover bg-center md:w-1/1 hidden project"
+                    style="background-image: url('{{ vich_uploader_asset(project, 'thumbnail') }}')
+
+                            ">
                 <div class="bg-gray-900 bg-opacity-50 flex items-center h-full">
                     <div class="px-10 max-w-xl">
-                        <h2 class="text-2xl text-white font-semibold">{{  project.name }}</h2>
+                        <h2 class="text-2xl text-white font-semibold">{{ project.name }}</h2>
                         <p class="mt-2 text-gray-400">{{ project.description| slice(0,100) }}</p>
                     </div>
                 </div>
             </div>
         {% endfor %}
     </div>
+    {% block javascripts %}
+        {{ parent() }}
+        <script src="{{ asset('build/filter_sort_project.js') }}"></script>
+    {% endblock %}
 {% endblock %}

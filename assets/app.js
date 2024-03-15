@@ -6,4 +6,6 @@
  */
 import './styles/app.css';
 
+import FilterSortProject from './javascript/filter_sort_project.js';
+
 console.log('This log comes from assets/app.js - welcome to AssetMapper! 🎉');
