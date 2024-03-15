@@ -35,8 +35,9 @@ class DashboardController extends AbstractDashboardController
     public function configureMenuItems(): iterable
     {
         yield MenuItem::linkToCrud('Projets', 'fa-solid fa-sheet-plastic', Project::class);
-        yield MenuItem::linkToCrud('Language', 'fa-solid fa-code', Language::class);
         yield MenuItem::linkToCrud('Utilisateur', 'fa-solid fa-user', User::class);
+        yield MenuItem::linkToCrud('Language', 'fa-solid fa-code', Language::class);
+        yield MenuItem::linkToCrud('Catégories', 'fa-solid fa-folder', Category::class);
         yield MenuItem::linkToCrud('Ajouter un projet', 'fas fa-plus', Project::class)->setAction(Crud::PAGE_NEW);
     }
 }
