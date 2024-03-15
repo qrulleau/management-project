@@ -11,6 +11,10 @@
     display: flex;
     animation: fade-in 0.3s ease forwards; /* Utilisez une animation pour un effet plus fluide */
 }
+.active {
+    color: rgb(37, 99, 235);
+    border-color: rgb(37, 99, 235);
+}
 
 @keyframes fade-in {
     from {
